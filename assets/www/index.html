@@ -23,21 +23,33 @@
         <meta name="format-detection" content="telephone=no" />
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <title>Hello World</title>
+        <title>My Journal</title>
     </head>
     <body>
-        <div class="app">
-            <h1>Apache Cordova</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
-            </div>
-            <div id="parseready" class="blink">
-            	<p class="event waiting">Waiting for Parse</p>
-                <p class="event initialized">Parse is Ready</p>
-            </div>
+        <div class="_addEntryPage addEntryPage">
+        	<h1>Add Journal Entry</h1>
+        	<div>
+        		<b>Title</b><br />
+        		<input type="text" id="journalEntryTitle" />
+        	</div>
+        	<div>
+        		<b>Body</b><br />
+        		<textarea id="journalEntryBody" ></textarea>
+        	</div>
+        	<div class="_addEntry btn">Add Entry</div>
+        	<div class="_cancelEntry btn cancel">Cancel</div>
+        </div>
+        <div class="_entriesPage entriesPage active">
+        	<h1>My Journal</h1>
+        	<div class="_addEntry addEntry btn">+</div>
+	        <ul class="entries _entries">
+	        	<li class="loading">
+	        		<h2>Loading Journal...</h2>
+	        	</li>
+	        </ul>
         </div>
         <script type="text/javascript" src="cordova-2.7.0.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
         <script src="http://www.parsecdn.com/js/parse-1.2.7.min.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript">

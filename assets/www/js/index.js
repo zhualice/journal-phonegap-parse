@@ -20,6 +20,9 @@ var app = {
     // Application Constructor
     initialize: function() {
         this.bindEvents();
+        
+        // Manually fire this event when testing in desktop browsers
+        // this.onDeviceReady();
     },
     // Bind Event Listeners
     //
@@ -33,21 +36,16 @@ var app = {
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicity call 'app.receivedEvent(...);'
     onDeviceReady: function() {
-        app.receivedEvent('deviceready');
 
         // Init our parse SDK
         app.initializeParse();
-    },
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
+        
+        // test parse connectivity
+        // app.testParse();
+        
+        app.getJournalEntries();
+        
+        app.initializeUI();
     },
     initializeParse: function() {
     	// Init with our app info and Key
@@ -60,20 +58,96 @@ var app = {
     	
     	Parse.initialize(parseAppID, parseApiKey);
     	
+    	// Setup our JournalEntryObject for interaction with Parse
+    	JournalEntryObject = Parse.Object.extend("JournalEntryObject");
+    },
+    testParse: function() {
     	// Create a test object and try to save it
     	var TestObject = Parse.Object.extend("TestObject");
     	var testObject = new TestObject();
+    	
     	testObject.save({foo: "bar"}, {
     	  success: function(object) {
-    		  var parentElement = document.getElementById("parseready");
-    		  var waitingElement = parentElement.querySelector('.waiting');
-    		  var initializedElement = parentElement.querySelector('.initialized');
-    		  
-    		  waitingElement.setAttribute('style', 'display:none;');
-    		  initializedElement.setAttribute('style', 'display:block;');
-    		  
-    		  console.log("Parse Ready!");
+    		  console.log("Parse Test Successful!");
     	  }
+    	});
+    },
+    initializeUI: function() {
+    	var self= this,
+    	$enrtiesPage = $("._entriesPage"),
+    	$addEntryPage = $("._addEntryPage");
+    	
+    	$enrtiesPage.find("._addEntry").click(function(e) {
+    		$enrtiesPage.hide();
+    		$addEntryPage.show();
+        });
+        
+    	$addEntryPage.find("._addEntry").click(function(e) {
+        	var journalEntry = new JournalEntryObject(),
+        	$title = $("#journalEntryTitle"),
+        	$body = $("#journalEntryBody");
+        	
+        	journalEntry.set("title", $title.val());
+        	journalEntry.set("body", $body.val());
+
+        	if (journalEntry.get("title") == "") {
+        		alert("Please enter a title for this journal entry.");
+        		return;
+        	}
+        	
+        	if (journalEntry.get("body") == "") {
+        		alert("Please enter a body for this journal entry.");
+        		return;
+        	}
+        	
+        	journalEntry.save(null, {
+    			success:function(object) {
+    				console.log("Saved the object!");
+    				$title.val("");
+    				$body.val("");
+    				
+    				self.getJournalEntries();
+    				
+    				$addEntryPage.hide();
+    				$enrtiesPage.show();
+    			}, 
+    			error:function(object,error) {
+    				console.dir(error);
+    				alert("Sorry, I couldn't save this journal entry.");
+    			}
+    		});
+        });
+        
+    	$addEntryPage.find("._cancelEntry").click(function(e) {
+        	$addEntryPage.hide();
+        	$enrtiesPage.show();
+        });
+    },
+    getJournalEntries: function() {
+    	var query = new Parse.Query(JournalEntryObject);
+
+    	query.find({
+    		success:function(results) {
+    			console.dir(results);
+    			var s = "";
+    			if (results.length > 0) {
+	    			for(var i=0, len=results.length; i<len; i++) {
+	    				var entry = results[i];
+	    				s += "<li>";
+	    				s += "<h2>"+entry.get("title")+"</h2>";
+	    				s += "<p>" + entry.get("body") + "</p>";
+	    				s += "<div class='created'>Created "+entry.createdAt + "</div>";
+	    				s += "</li>";
+	    			}
+    			} else {
+    				s = "<li class='loading'><h2>No journal entries found</h2></li>";
+    			}
+    			
+    			$("._entries").html(s);
+    		},
+    		error:function(error) {
+    			alert("Error when getting journal entries!");
+    		}
     	});
     }
 };

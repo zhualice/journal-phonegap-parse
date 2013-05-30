@@ -17,7 +17,7 @@
  * under the License.
  */
 * {
-    -webkit-tap-highlight-color: rgba(0,0,0,0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
+    -webkit-tap-highlight-color: rgba(255,255,255,0.25); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
 }
 
 body {
@@ -45,30 +45,6 @@ body {
     width:100%;
 }
 
-/* Portrait layout (default) */
-.app {
-    background:url(../img/logo.png) no-repeat center top; /* 170px x 200px */
-    position:absolute;             /* position in the center of the screen */
-    left:50%;
-    top:50%;
-    height:50px;                   /* text area height */
-    width:225px;                   /* text area width */
-    text-align:center;
-    padding:180px 0px 0px 0px;     /* image height is 200px (bottom 20px are overlapped with text) */
-    margin:-115px 0px 0px -112px;  /* offset vertical: half of image height and text area height */
-                                   /* offset horizontal: half of text area width */
-}
-
-/* Landscape layout (with min-width) */
-@media screen and (min-aspect-ratio: 1/1) and (min-width:400px) {
-    .app {
-        background-position:left center;
-        padding:75px 0px 75px 170px;  /* padding-top + padding-bottom + text area = image height */
-        margin:-90px 0px 0px -198px;  /* offset vertical: half of image height */
-                                      /* offset horizontal: half of image width and text area width */
-    }
-}
-
 h1 {
     font-size:24px;
     font-weight:normal;
@@ -78,44 +54,75 @@ h1 {
     text-align:center;
 }
 
-.event {
-    border-radius:4px;
-    -webkit-border-radius:4px;
-    color:#FFFFFF;
-    font-size:12px;
-    margin:0px 30px;
-    padding:2px 0px;
+.entriesPage,
+.addEntryPage {
+	margin:10px;
 }
 
-.event.listening,
-.event.waiting {
-    background-color:#333333;
-    display:block;
+ul.entries {
+	list-style: none;
+	margin: 0;
+	padding: 0;
 }
 
-.event.received,
-.event.initialized {
-    background-color:#4B946A;
-    display:none;
+ul.entries li {
+	border-bottom: 1px solid #CCC;
 }
 
-#parseready {
-	margin-top:5px;
+ul.entries li.loading {
+	text-align:center;
 }
 
-@keyframes fade {
-    from { opacity: 1.0; }
-    50% { opacity: 0.4; }
-    to { opacity: 1.0; }
+ul.entries li:last-child {
+	border:none;
 }
- 
-@-webkit-keyframes fade {
-    from { opacity: 1.0; }
-    50% { opacity: 0.4; }
-    to { opacity: 1.0; }
+
+ul.entries li h2 {
+	margin-bottom:0;	
 }
- 
-.blink {
-    animation:fade 3000ms infinite;
-    -webkit-animation:fade 3000ms infinite;
+
+ul.entries li p {
+	margin: 5px 0;
+}
+
+.created {
+	text-align:right;
+	text-transform:none;
+	margin-bottom:5px;
+}
+
+.btn {
+	margin: 10px 0;
+	line-height: 23px;
+	background-color: green;
+	text-align: center;
+	border: 1px solid #CCC;
+	color: #FFF;
+	padding: 5px;
+	font-size: 18px;
+	text-shadow: 1px 1px #333;
+}
+
+.cancel {
+	background-color: orange;
+}
+
+.entriesPage .addEntry {
+	position: absolute;
+	top: -5px;
+	right: 10px;
+	width: 23px;
+}
+
+.addEntryPage {
+	display:none;
+}
+
+input[type=text],
+textarea {
+	width: 98%;
+}
+
+textarea {
+	height:180px;
 }
