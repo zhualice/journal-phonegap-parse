@@ -46,11 +46,11 @@ body {
 }
 
 h1 {
-    font-size:24px;
+    font-size:25px;
     font-weight:normal;
-    margin:0px;
+    margin:0;
     overflow:visible;
-    padding:0px;
+    padding:0;
     text-align:center;
 }
 
@@ -82,13 +82,25 @@ ul.entries li h2 {
 }
 
 ul.entries li p {
-	margin: 5px 0;
+	margin: 5px 0 15px 0;
+	font-size:15px;
 }
 
 .created {
-	text-align:right;
+	text-align:left;
+}
+
+.meta {
+	position:relative;
+	font-size:11px;	
 	text-transform:none;
-	margin-bottom:5px;
+}
+
+.location {
+	text-align:right;
+	position: absolute;
+	right: 0px;
+	top: 0px;	
 }
 
 .btn {
@@ -124,5 +136,5 @@ textarea {
 }
 
 textarea {
-	height:180px;
+	height:100px;
 }

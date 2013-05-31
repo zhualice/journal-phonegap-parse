@@ -17,7 +17,6 @@
  * under the License.
  */
 var geo = {};
-
 var app = {
     // Application Constructor
     initialize: function() {
@@ -173,6 +172,26 @@ var app = {
     		window.open(link, '_blank', 'location=yes');
     	});
     },
+    formatTime: function(d) {
+    	var curr_hour = d.getHours();
+
+    	if (curr_hour < 12) {
+    		a_p = "AM";
+    	} else {
+    	   a_p = "PM";
+    	}
+    	
+    	if (curr_hour == 0) {
+    	   curr_hour = 12;
+    	}
+    	
+    	if (curr_hour > 12)
+    	{
+    	   curr_hour = curr_hour - 12;
+    	}
+    	
+    	return curr_hour + ":" + d.getMinutes() + " " + a_p;
+    },
     getJournalEntries: function() {
     	var query = new Parse.Query(JournalEntryObject);
 
@@ -185,15 +204,18 @@ var app = {
 	    				var entry = results[i];
 	    				s += "<li>";
 	    				s += "<h2>"+entry.get("title")+"</h2>";
-	    				s += "<p>" + entry.get("body") + "</p>";
+
+	    				var d = new Date(Date.parse(entry.createdAt));
+	    				s += "<div class='meta'><div class='created'>" + d.toDateString() + " at " + app.formatTime(d) + "</div>";
 	    				
 	    				// Do we have geolocation info?
 	    				if(entry.has("position")) {
 	    					var pos = entry.get("position");
-	    					s += "<a href=\"\" class=\"_mapLink\" data-longitude=\"" + pos.longitude +"\" data-latitude=\""+ pos.latitude+"\">View on Map</a><br/>";
+	    					s += "<a href=\"\" class=\"_mapLink location\" data-longitude=\"" + pos.longitude +"\" data-latitude=\""+ pos.latitude+"\">View on Map</a>";
 	    				}
 	    				
-	    				s += "<div class='created'>Created "+entry.createdAt + "</div>";
+	    				s += "</div>";
+	    				s += "<p>" + entry.get("body") + "</p>";
 	    				s += "</li>";
 	    			}
     			} else {
