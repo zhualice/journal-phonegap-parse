@@ -16,6 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+var geo = {};
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -37,15 +39,40 @@ var app = {
     // function, we must explicity call 'app.receivedEvent(...);'
     onDeviceReady: function() {
 
+    	// set our device up with geo
+    	app.initializeGeo();
+    	
         // Init our parse SDK
         app.initializeParse();
         
         // test parse connectivity
         // app.testParse();
         
+        // Query Parse for jounral entries
         app.getJournalEntries();
         
+        // hook up our UI events
         app.initializeUI();
+    },
+    initializeGeo: function() {
+    	// Throw an error if no update is received every 30 seconds
+        var options = { timeout: 30000 };
+        this.watchID = navigator.geolocation.watchPosition(this.geoSuccess, this.geoError, options);
+    },
+    geoSuccess: function(position) {
+    	console.log("Geo success");
+    	
+    	geo.latitute = position.coords.latitude;
+    	geo.longitude = position.coords.longitude;
+    	geo.isSet = true;
+        
+        console.log(geo.latitute);
+        console.log(geo.longitude);
+    },
+    geoError: function(error) {
+    	// Do nothing, just write some output
+    	console.log('code: '    + error.code    + '\n' +
+                'message: ' + error.message + '\n');
     },
     initializeParse: function() {
     	// Init with our app info and Key
@@ -99,6 +126,14 @@ var app = {
         		alert("Please enter a body for this journal entry.");
         		return;
         	}
+
+        	// Set our Geolocation if we have it
+        	if (geo.isSet) {
+        		console.log("Setting Geolocation");
+        		journalEntry.set("position", new Parse.GeoPoint( { latitude: geo.latitute, longitude: geo.longitude } ));
+        	} else {
+        		console.log("no geo");
+        	}
         	
         	journalEntry.save(null, {
     			success:function(object) {
@@ -122,6 +157,21 @@ var app = {
         	$addEntryPage.hide();
         	$enrtiesPage.show();
         });
+    	
+    	$(document).on("click", "._mapLink", function(e) {
+    		e.preventDefault();
+    		e.stopPropagation();
+
+    		//Get the position from the data attribute
+    		var long = $(this).data("longitude"),
+    		    lat = $(this).data("latitude");
+    		
+    		//Generate Google Static Map API link
+    		var link = "http://maps.googleapis.com/maps/api/staticmap?center="+lat+","+long+"&zoom=13&size=400x400&maptype=roadmap&markers=color:red%7Ccolor:red%7C"+lat+","+long+"&sensor=false";
+
+    		// alert("Opening Map:" + link);
+    		window.open(link, '_blank', 'location=yes');
+    	});
     },
     getJournalEntries: function() {
     	var query = new Parse.Query(JournalEntryObject);
@@ -136,6 +186,13 @@ var app = {
 	    				s += "<li>";
 	    				s += "<h2>"+entry.get("title")+"</h2>";
 	    				s += "<p>" + entry.get("body") + "</p>";
+	    				
+	    				// Do we have geolocation info?
+	    				if(entry.has("position")) {
+	    					var pos = entry.get("position");
+	    					s += "<a href=\"\" class=\"_mapLink\" data-longitude=\"" + pos.longitude +"\" data-latitude=\""+ pos.latitude+"\">View on Map</a><br/>";
+	    				}
+	    				
 	    				s += "<div class='created'>Created "+entry.createdAt + "</div>";
 	    				s += "</li>";
 	    			}
